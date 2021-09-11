@@ -5,7 +5,7 @@
 
 		if ($hash_stmt->rowCount() > 0) {
 			// TODO: Check if hash has expired
-			return $hash_stmt->fetch()['user_id'];
+			return get_user_row_by_id($hash_stmt->fetch()['user_id']);
 		} else {
 			return false;
 		}
@@ -27,12 +27,12 @@
 
     function get_user_row_by_id ($id) {
         global $link;
-        return $link-query("SELECT * FROM `users` WHERE `id` = {$id}")->fetch();
+        return $link->query("SELECT * FROM `users` WHERE `id` = {$id}")->fetch();
     }
 
     function get_user_row_by_email ($email) {
         global $link;
-        return $link-query("SELECT * FROM `users` WHERE `email` = {$email}")->fetch();
+        return $link->query("SELECT * FROM `users` WHERE `email` = {$email}")->fetch();
     }
 
     function is_admin ($id) {
@@ -102,8 +102,8 @@
 		}
 		$result = base64_encode($result);
 		return md5($result);
-    }
-
+	}
+	
     function check_credentials($email, $password){
 		global $link;
 		$query = $link->prepare("SELECT * FROM `users` WHERE `email` = ? AND `password_hashed` = ?");
@@ -137,5 +137,10 @@
 	function insert_copy ($user_id, $copy, $device_hash) {
 		global $link;
 		$link->query("INSERT INTO `copies`(`user_id`, `text`, `device_hash`) VALUES ({$user_id}, '{$copy}', '{$device_hash}')");
+	}
+
+	function d_log ($message) {
+		global $link;
+		$link->query("INSERT INTO `log` (`message`) VALUES('{$message}')");
 	}
 ?>
